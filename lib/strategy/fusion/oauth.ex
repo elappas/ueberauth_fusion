@@ -3,8 +3,8 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
   OAuth2 for Fusion.
 
   # TODO
-  Add `client_id`, `client_secret`, `fusion_url`, `redirect_url` to your configuration:
-  Also you can configure: `authorize_url`, `userinfo_url`, `userinfo_url`, `jwk_set_url`.
+  Add `client_id`, `client_secret`, `fusion_url`, `redirect_url`, `tenant_id` to your configuration:
+  Also you can configure: `authorize_url`, `userinfo_url`, `userinfo_url`, `jwk_set_url`, `sign_out_url`.
   If not configured, then the default values are build using `fusion_url`
 
   config :ueberauth, Ueberauth.Strategy.Fusion.OAuth,
@@ -12,6 +12,7 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     client_secret: System.get_env("FUSION_APP_SECRET")
     redirect_url: System.get_env("FUSION_REDIRECT_URL")
     fusion_url: System.get_env("FUSION_URL")
+    tenant_id: System.get_env("FUSION_URL")
   """
   use OAuth2.Strategy
 
@@ -26,9 +27,19 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
       authorize_url: to_string(@url) <> "/oauth2/authorize",
       token_url: to_string(@url) <> "/oauth2/token",
       userinfo_url: to_string(@url) <> "/oauth2/userinfo",
-      jwk_set_url: to_string(@url) <> "/.well-known/jwks.json" ,
+      jwk_set_url: to_string(@url) <> "/.well-known/jwks.json",
+      sign_out_url: to_string(@url) <> "/oauth2/logout",
       token_method: :post
     ]
+  end
+
+  defp construct_options(opts) do
+    config = Application.get_env(:ueberauth, __MODULE__, [])
+    _opts = defaults() |> Keyword.merge(opts) |> Keyword.merge(config) |> resolve_values()
+  end
+
+  def get_config_value(value) do
+    construct_options([]) |> Keyword.get(value)
   end
 
   @doc """
@@ -39,8 +50,7 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
   These options are only useful for usage outside the normal callback phase of Ueberauth.
   """
   def client(opts \\ []) do
-    config = Application.get_env(:ueberauth, __MODULE__, [])
-    opts = defaults() |> Keyword.merge(opts) |> Keyword.merge(config) |> resolve_values()
+    opts = construct_options(opts)
     json_library = Ueberauth.json_library()
 
     OAuth2.Client.new(opts)
@@ -86,6 +96,13 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     |> put_param("client_secret", client.client_secret)
     |> put_header("Accept", "application/json")
     |> OAuth2.Strategy.AuthCode.get_token(params, headers)
+  end
+
+  def signout_url(_params \\ %{}) do
+    sign_out  = get_config_value(:sign_out_url)
+    client_id = get_config_value(:client_id)
+    tenant_id = get_config_value(:tenant_id)
+    {:ok, "#{sign_out}?client_id=#{client_id}&tenant_id=#{tenant_id}"}
   end
 
   defp resolve_values(list) do

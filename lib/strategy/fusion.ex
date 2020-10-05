@@ -5,22 +5,7 @@ defmodule Ueberauth.Strategy.Fusion do
   alias Ueberauth.Auth.Credentials
   alias Ueberauth.Auth.Extra
   alias Ueberauth.Strategy.Helpers
-
-
-  @url Application.get_env(:ueberauth, __MODULE__.OAuth) |> Keyword.get(:fusion_url, "http://localhost:9011")
-
-  #@defaults []
-  defp defaults() do
-    [
-      strategy: __MODULE__,
-      site: @url,
-      authorize_url: to_string(@url) <> "/oauth2/authorize",
-      token_url: to_string(@url) <> "/oauth2/token",
-      userinfo_url: to_string(@url) <> "/oauth2/userinfo",
-      jwk_set_url: to_string(@url) <> "/.well-known/jwks.json" ,
-      token_method: :post
-    ]
-  end
+  alias Ueberauth.Strategy.Fusion.OAuth
 
   @doc """
   Handles initial request for Fusion authentication.
@@ -134,10 +119,19 @@ defmodule Ueberauth.Strategy.Fusion do
     }
   end
 
+  def logout(conn) do
+    with {:ok, signout_url} <- OAuth.signout_url() do
+      redirect!(conn, signout_url)
+    else
+      _ ->
+        set_errors!(conn, [error("Logout Failed", "Failed to logout, please close your browser")])
+    end
+  end
+
   defp fetch_user(conn, token) do
     conn = put_private(conn, :fusion_token, token)
 
-    path = defaults() |> Keyword.get(:userinfo_url)
+    path = Ueberauth.Strategy.Fusion.OAuth.get_config_value(:userinfo_url)
     resp = Ueberauth.Strategy.Fusion.OAuth.get(token, path)
 
     case resp do
