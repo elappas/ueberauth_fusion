@@ -17,18 +17,18 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
   use OAuth2.Strategy
 
   require Logger
-  @url Application.get_env(:ueberauth, __MODULE__, []) |> Keyword.get(:fusion_url, "http://localhost:9011")
 
   #@defaults []
   defp defaults() do
+    url = Application.get_env(:ueberauth, __MODULE__, []) |> Keyword.get(:fusion_url, "http://localhost:9011")
     [
       strategy: __MODULE__,
-      site: @url,
-      authorize_url: to_string(@url) <> "/oauth2/authorize",
-      token_url: to_string(@url) <> "/oauth2/token",
-      userinfo_url: to_string(@url) <> "/oauth2/userinfo",
-      jwk_set_url: to_string(@url) <> "/.well-known/jwks.json",
-      sign_out_url: to_string(@url) <> "/oauth2/logout",
+      site: url,
+      authorize_url: to_string(url) <> "/oauth2/authorize",
+      token_url: to_string(url) <> "/oauth2/token",
+      userinfo_url: to_string(url) <> "/oauth2/userinfo",
+      jwk_set_url: to_string(url) <> "/.well-known/jwks.json",
+      sign_out_url: to_string(url) <> "/oauth2/logout",
       token_method: :post
     ]
   end
