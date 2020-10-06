@@ -12,12 +12,12 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     client_secret: System.get_env("FUSION_APP_SECRET")
     redirect_url: System.get_env("FUSION_REDIRECT_URL")
     fusion_url: System.get_env("FUSION_URL")
-    tenant_id: System.get_env("FUSION_URL")
+    tenant_id: System.get_env("TENANT_ID")
   """
   use OAuth2.Strategy
 
   require Logger
-  @url Application.get_env(:ueberauth, __MODULE__) |> Keyword.get(:fusion_url, "http://localhost:9011")
+  @url Application.get_env(:ueberauth, __MODULE__, []) |> Keyword.get(:fusion_url, "http://localhost:9011")
 
   #@defaults []
   defp defaults() do
