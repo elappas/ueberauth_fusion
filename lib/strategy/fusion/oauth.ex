@@ -77,9 +77,11 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     case opts |> client |> OAuth2.Client.get_token(params) do
       {:error, %{body: %{"error" => error, "error_description" => description}}} ->
         {:error, {error, description}}
-      {:ok, %{token: %{access_token: nil} = token}} ->
-        %{"error" => error, "error_description" => description} = token.other_params
-        {:error, {error, description}}
+      {:error, %{body: _body, status_code: status_code} = _token} ->
+        {:error, {status_code, status_code}}
+      # {:ok, %{token: %{access_token: nil} = token}} ->
+      #   %{"error" => error, "error_description" => description} = token.other_params
+      #   {:error, {error, description}}
       {:ok, %{token: token}} ->
         {:ok, token}
     end
