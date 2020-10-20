@@ -119,6 +119,9 @@ defmodule Ueberauth.Strategy.Fusion do
     }
   end
 
+  @doc """
+  redirects the user to the logout url. If case of an error, it sets the error
+  """
   def logout(conn) do
     with {:ok, signout_url} <- OAuth.signout_url() do
       redirect!(conn, signout_url)
@@ -140,7 +143,7 @@ defmodule Ueberauth.Strategy.Fusion do
       {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
         put_private(conn, :fusion_user, user)
       {:error, %OAuth2.Response{status_code: status_code}} ->
-        Helpers.set_errors!(conn, [error("OAuth2", status_code)])
+        set_errors!(conn, [error("OAuth2", to_string(status_code))])
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])
     end

@@ -6,7 +6,7 @@
 2. Create a topic branch
 3. Make logically-grouped commits with clear commit messages
 4. Push commits to your fork
-5. Open a pull request against ueberauth_google/master
+5. Open a pull request against ueberauth_fusion/master
 
 ## Issues
 

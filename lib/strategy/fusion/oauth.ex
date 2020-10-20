@@ -2,7 +2,6 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
   @moduledoc """
   OAuth2 for Fusion.
 
-  # TODO
   Add `client_id`, `client_secret`, `fusion_url`, `redirect_url`, `tenant_id` to your configuration:
   Also you can configure: `authorize_url`, `userinfo_url`, `userinfo_url`, `jwk_set_url`, `sign_out_url`.
   If not configured, then the default values are build using `fusion_url`
@@ -38,6 +37,9 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     _opts = defaults() |> Keyword.merge(opts) |> Keyword.merge(config) |> resolve_values()
   end
 
+  @doc """
+  returns the configuration for a specific value ssing the default urls and the overriden values
+  """
   def get_config_value(value) do
     construct_options([]) |> Keyword.get(value)
   end
@@ -98,6 +100,10 @@ defmodule Ueberauth.Strategy.Fusion.OAuth do
     |> OAuth2.Strategy.AuthCode.get_token(params, headers)
   end
 
+
+  @doc """
+  returns the signout url based on the configuration files, sign_out_url and client_id
+  """
   def signout_url(_params \\ %{}) do
     sign_out  = get_config_value(:sign_out_url)
     client_id = get_config_value(:client_id)
