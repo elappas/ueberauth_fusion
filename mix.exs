@@ -16,7 +16,8 @@ defmodule UeberauthFusion.MixProject do
       source_url: @url,
       homepage_url: @url,
       description: description(),
-      deps: deps()
+      deps: deps(),
+      docs: docs(),
     ]
   end
 
@@ -28,8 +29,13 @@ defmodule UeberauthFusion.MixProject do
     [
       {:oauth2, "~> 1.0 or ~> 2.0"},
       {:ueberauth, "~> 0.6.3"},
-      {:mock, "~> 0.3", only: :test}
+      {:mock, "~> 0.3", only: :test},
+      {:ex_doc, "~> 0.19", only: [:dev], runtime: false},
     ]
+  end
+
+  defp docs do
+    [extras: ["README.md", "CONTRIBUTING.md"]]
   end
 
   defp description do
@@ -37,9 +43,10 @@ defmodule UeberauthFusion.MixProject do
   end
 
   defp package do
-    [files: ["lib", "mix.exs", "README.md", "LICENSE"],
-     maintainers: ["Evangelos Lappas"],
-     licenses: ["MIT"],
-     links: %{"GitHub": @url}]
+    [      name: "ueberauth_fusion",
+    files: ["lib", "mix.exs", "README.md", "LICENSE"],
+    maintainers: ["Evangelos Lappas"],
+    licenses: ["MIT"],
+    links: %{"GitHub" => @url}]
   end
 end
