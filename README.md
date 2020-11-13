@@ -1,7 +1,7 @@
 # UeberauthFusion
 
 Fusion OAuth2 strategy for Überauth.
-The strategy developed based existing Strategies for Überauth.
+The strategy developed based on existing Strategies for Überauth.
 
 ## Installation
 
